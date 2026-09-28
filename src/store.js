@@ -11,7 +11,7 @@
                       window.OUTGROW_CONFIG) and this switches over
                       automatically. Run supabase/schema.sql first.
 
-   Why a single JSON document rather than normalised tables: at Acsia's
+   Why a single JSON document rather than normalised tables: at this
    scale (tens of accounts, a few hundred actions a month) a document is
    simpler, atomic, and trivial to export. If concurrent editing ever
    becomes a real problem, split `actions` into its own table first —
@@ -20,13 +20,17 @@
 
 import { SEED } from "./seed.js";
 
-const KEY = "outgrow-acsia-v1";
+const KEY = "outgrow-console-v1";
 const cfg = (typeof window !== "undefined" && window.OUTGROW_CONFIG) || {};
 const SB_URL  = cfg.supabaseUrl  || "";
 const SB_KEY  = cfg.supabaseAnonKey || "";
-const SB_ROW  = cfg.workspaceId || "acsia";
+const SB_ROW  = cfg.workspaceId || "default";
 
 export const MODE = (SB_URL && SB_KEY) ? "supabase" : "local";
+
+/* Wipe the old pre-scrub storage key so no previous data lingers in
+   anyone's browser after this data refresh. */
+try { if (typeof localStorage !== "undefined") localStorage.removeItem("outgrow-acsia-v1"); } catch {}
 
 /* ---------------- local ---------------- */
 const local = {

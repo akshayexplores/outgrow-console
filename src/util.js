@@ -29,14 +29,15 @@ export function prettyWeek(w){
   return a.toLocaleDateString("en-GB", { day:"numeric", month:"long", year:"numeric" });
 }
 
-/* Indian numbering — Acsia bills in INR, so lakhs and crores read faster
-   than thousands and millions to everyone who will use this. */
+/* Standard international K/M/B number shorthand. */
 export function money(n){
   n = Number(n) || 0;
-  if (n >= 1e7) return (n/1e7).toFixed(n % 1e7 ? 1 : 0) + " Cr";
-  if (n >= 1e5) return (n/1e5).toFixed(n % 1e5 ? 1 : 0) + " L";
-  if (n >= 1000) return (n/1000).toFixed(0) + "k";
-  return String(n);
+  const sign = n < 0 ? "-" : "";
+  n = Math.abs(n);
+  if (n >= 1e9) return sign + (n/1e9).toFixed(n % 1e9 ? 1 : 0) + "B";
+  if (n >= 1e6) return sign + (n/1e6).toFixed(n % 1e6 ? 1 : 0) + "M";
+  if (n >= 1e3) return sign + (n/1e3).toFixed(n % 1e3 ? 1 : 0) + "k";
+  return sign + String(n);
 }
 
 export function copy(text){

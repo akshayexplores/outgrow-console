@@ -1,6 +1,6 @@
-# Outgrow Console — Acsia Technologies
+# Outgrow Console
 
-Operational console for running the Outgrow proactive-sales system against Acsia's **existing delivery and programme accounts**.
+Operational console for running the Outgrow proactive-sales system against your organisation's **existing delivery and programme accounts**.
 
 No build step. No framework. Static files, deployable to Vercel in about two minutes.
 
@@ -8,11 +8,11 @@ No build step. No framework. Static files, deployable to Vercel in about two min
 
 ## What this is for
 
-Acsia's documented sales process runs eight stages from FOUNDATION to CLOSE & TRANSITION, then hands off to Delivery and stops. There is no post-sale motion. Meanwhile Acsia engineers sit inside OEM and Tier-1 programmes every week holding trust no salesperson could buy, next to spend nobody asks about.
+Most B2B sales processes run through a defined set of stages, then hand off to Delivery and stop. There is no post-sale motion. Meanwhile your own engineers sit inside customer programmes every week holding trust no salesperson could buy, next to spend nobody asks about.
 
 This console runs the system that fills that gap: a small number of deliberately trivial customer-facing behaviours, done daily, tracked as **inputs** rather than outcomes.
 
-**Scope boundary.** This holds accounts, contacts, lists, assignments and logged actions. It does **not** hold deal stage, MEDDPICC or Blue Sheet data — those stay in Zoho CRM. Keeping that line is what stops this becoming a second source of truth.
+**Scope boundary.** This holds accounts, contacts, lists, assignments and logged actions. It does **not** hold deal stage, MEDDPICC or Blue Sheet data — those stay in your CRM. Keeping that line is what stops this becoming a second source of truth.
 
 ---
 
@@ -43,7 +43,7 @@ Out of the box the app stores data in the browser (`localStorage`). That is fine
 window.OUTGROW_CONFIG = {
   supabaseUrl:     "https://xxxxx.supabase.co",
   supabaseAnonKey: "eyJhbGci...",
-  workspaceId:     "acsia"
+  workspaceId:     "default"
 };
 ```
 
@@ -69,7 +69,7 @@ supabase/schema.sql   one table, RLS on
 vercel.json
 ```
 
-**`src/content.js` is the file to edit.** Every script, objection response, interview question and channel rule lives there as plain data, so anyone at Acsia can change the words without touching application code. Change them there and they change everywhere — including the script that appears next to someone at the moment they're about to make the call.
+**`src/content.js` is the file to edit.** Every script, objection response, interview question and channel rule lives there as plain data, so anyone on the team can change the words without touching application code. Change them there and they change everywhere — including the script that appears next to someone at the moment they're about to make the call.
 
 ---
 
@@ -94,7 +94,7 @@ vercel.json
 
 ## The lists
 
-Ten of the book's eleven. Cold prospects are deliberately excluded — that list belongs to Acsia's existing outbound engine, and running it here would put two systems on the same accounts.
+Ten of the book's eleven. Cold prospects are deliberately excluded — that list belongs to your existing outbound engine, and running it here would put two systems on the same accounts.
 
 | Group | List | Membership |
 |---|---|---|
@@ -117,8 +117,8 @@ Accounts can sit on several lists. That's a feature — it means two different p
 
 - **Logging is three fields and states "proactive only" at the point of entry.** Every field added past that trades a real customer behaviour for a data point.
 - **Managers can log on behalf of someone else.** The field pattern is: engineer asks one question on site, texts their manager from the car, manager logs it. Asking an engineer to open a CRM at a customer's office is asking them not to bother.
-- **The scorecard shows no closed revenue.** Cycles run 9–18 months. Measuring hits before the swings convert is the fastest way to kill the programme.
-- **No borrowed conversion rates.** Published figures from distribution businesses (20% DYK, 80% rDYK, 25% pivot) do not transfer and appear nowhere. The tool measures Acsia's own and shows nothing until there's volume.
+- **The scorecard shows no closed revenue.** Cycles can run 9–18 months. Measuring hits before the swings convert is the fastest way to kill the programme.
+- **No borrowed conversion rates.** Published figures from distribution businesses (20% DYK, 80% rDYK, 25% pivot) do not transfer and appear nowhere. The tool measures your own and shows nothing until there's volume.
 - **Participation below 60% triggers a leadership prompt, not a team one.** When adoption sags the cause is almost never the frontline.
 - **Logging an opportunity prompts for the story immediately** — a week later, in a separate workflow, it never gets collected.
 
@@ -137,4 +137,4 @@ python3 -m http.server 8000
 
 ## Companion
 
-The `outgrow-acsia` Claude skill is the coaching and method layer — diagnostics, rollout sequence, the CEO brief. This console is the operational layer. They share the same source material.
+An "Outgrow" coaching skill is the diagnostics and rollout-sequence layer. This console is the operational layer. They share the same source material.

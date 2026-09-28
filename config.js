@@ -20,5 +20,5 @@
 window.OUTGROW_CONFIG = {
   supabaseUrl:     "",
   supabaseAnonKey: "",
-  workspaceId:     "acsia"
+  workspaceId:     "default"
 };
