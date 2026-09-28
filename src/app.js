@@ -258,8 +258,8 @@ function vSignals(){
         <div class="xs muted">${esc(person(a.owner).name)}</div></td>
         <td class="n"><span class="pill p-warn">${acctContacts(a.id).length} mapped</span></td></tr>`).join("")}
       </tbody></table>` : `<div class="empty">None.</div>`}
-      <div class="pad xs muted" style="border-top:1px solid var(--rule2)">Acsia's own ICP work found roughly
-        thirty buying-committee contacts per qualified account. Two mapped contacts is not coverage — it's exposure.</div>
+      <div class="pad xs muted" style="border-top:1px solid var(--rule2)">Enterprise accounts like these often carry
+        dozens of buying-committee contacts. Two mapped contacts is not coverage — it's exposure.</div>
     </div>
 
     <div class="card"><h3>Lowest wallet share</h3>
@@ -370,7 +370,7 @@ function vAssign(){
   ${!gateOpen() ? `<div class="gate">
     <b>Happy Customer Interviews aren't done yet — ${interviewsDone()} of ${S.config.interviewTarget}.</b>
     <p>The method treats these as a prerequisite, not a nice-to-have. Delivery engineers won't make a
-    commercial ask until they've heard a real customer say, unprompted, that they want more from Acsia.
+    commercial ask until they've heard a real customer say, unprompted, that they want more from us.
     Skipping this is the most common single cause of failure. You can still assign — but if participation
     stalls in week three, this is why.</p>
     <p style="margin-top:7px"><a onclick="OG.go('interviews')">Go to Interviews →</a></p>
@@ -533,9 +533,9 @@ function vScore(){
       <td class="n"><b>${m.o?(m.n/m.o).toFixed(1):"—"}</b></td></tr>`).join("")}
     </tbody></table>` : `<div class="empty">Not enough volume yet. An action type needs five logged
       instances before this shows anything, and the number isn't trustworthy until week 26.</div>`}
-    <div class="pad xs muted" style="border-top:1px solid var(--rule2)">These are Acsia's own measured rates.
-      Published figures from distribution businesses (20% DYK, 80% rDYK) do not transfer to 9–18 month
-      automotive cycles and are deliberately not used anywhere in this tool.</div>
+    <div class="pad xs muted" style="border-top:1px solid var(--rule2)">These are your own measured rates.
+      Published figures from distribution businesses (20% DYK, 80% rDYK) do not transfer to long enterprise
+      cycles and are deliberately not used anywhere in this tool.</div>
   </div>
 
   <p class="xs faint">* Estimated value is self-reported by the person logging and is not a forecast.</p>`;
@@ -672,10 +672,10 @@ function vInterviews(){
 
   ${!gateOpen() ? `<div class="note bad"><b>${target-done} more before week one.</b>
     This is the step that converts fear into confidence. Delivery engineers won't make a commercial ask
-    until they've heard a customer say, unprompted, that they want more from Acsia — and playing them
+    until they've heard a customer say, unprompted, that they want more from us — and playing them
     a recording does more in eleven seconds than any amount of training.</div>`
     : `<div class="note info"><b>Prerequisite met.</b> Play clips in the Monday huddle, especially any moment
-    where a customer says they'd have bought more or didn't know Acsia offered something.</div>`}
+    where a customer says they'd have bought more or didn't know we offered something.</div>`}
 
   <div class="split">
     <div>
@@ -1170,7 +1170,7 @@ const OG = {
   },
   async delInterview(id){ modal = null; await mutate(s => { s.interviews = s.interviews.filter(i => i.id !== id); }); },
 
-  exportJSON(){ download(`outgrow-acsia-${todayISO()}.json`, JSON.stringify(S,null,2)); toast("Exported"); },
+  exportJSON(){ download(`outgrow-console-${todayISO()}.json`, JSON.stringify(S,null,2)); toast("Exported"); },
   importJSON(){
     const inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json";
     inp.onchange = async () => {
