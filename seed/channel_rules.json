@@ -1,0 +1,51 @@
+[
+ {
+  "geography": "India",
+  "primary_channel": "Phone call",
+  "follow_up_channel": "WhatsApp",
+  "avoid": "",
+  "blocked_channels": []
+ },
+ {
+  "geography": "US",
+  "primary_channel": "Phone call",
+  "follow_up_channel": "SMS",
+  "avoid": "",
+  "blocked_channels": []
+ },
+ {
+  "geography": "Germany",
+  "primary_channel": "Desk/mobile call in business hours; Teams where a working relationship exists",
+  "follow_up_channel": "Teams",
+  "avoid": "Unsolicited SMS to personal mobiles",
+  "blocked_channels": [
+   "SMS",
+   "WhatsApp"
+  ]
+ },
+ {
+  "geography": "Japan",
+  "primary_channel": "Existing meeting cadence - in person or scheduled video; introductions via the known contact",
+  "follow_up_channel": "Formal follow-up message",
+  "avoid": "Cold calls, unexpected mobile contact",
+  "blocked_channels": [
+   "Call",
+   "SMS",
+   "WhatsApp"
+  ]
+ },
+ {
+  "geography": "South Korea",
+  "primary_channel": "Call within an existing relationship; KakaoTalk where used",
+  "follow_up_channel": "KakaoTalk",
+  "avoid": "Cold mobile contact",
+  "blocked_channels": []
+ },
+ {
+  "geography": "France / Italy / Sweden",
+  "primary_channel": "Phone call",
+  "follow_up_channel": "Email as follow-up only",
+  "avoid": "Email as the action",
+  "blocked_channels": []
+ }
+]

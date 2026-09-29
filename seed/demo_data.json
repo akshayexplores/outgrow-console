@@ -1,0 +1,152 @@
+{
+ "note": "ALL ROWS ARE EXAMPLES (is_example=true). People and customer contacts are fictional; account names are real Acsia customers and INTERNAL. Load only into dev/staging, or delete before go-live.",
+ "people": [
+  {
+   "full_name": "Priya M.",
+   "email": "priya@example.acsia.test",
+   "app_role": "pm",
+   "job_role": "Project manager",
+   "weekly_target": 5
+  },
+  {
+   "full_name": "Arjun S.",
+   "email": "arjun@example.acsia.test",
+   "app_role": "ae",
+   "job_role": "Account executive",
+   "weekly_target": 15
+  },
+  {
+   "full_name": "Meera K.",
+   "email": "meera@example.acsia.test",
+   "app_role": "delivery_lead",
+   "job_role": "Delivery lead",
+   "weekly_target": 5
+  },
+  {
+   "full_name": "Karthik S.",
+   "email": "karthik@example.acsia.test",
+   "app_role": "engineer",
+   "job_role": "Delivery engineer",
+   "weekly_target": 2
+  },
+  {
+   "full_name": "Anjali R.",
+   "email": "anjali@example.acsia.test",
+   "app_role": "engineer",
+   "job_role": "Delivery engineer",
+   "weekly_target": 2
+  },
+  {
+   "full_name": "Rahul T.",
+   "email": "rahul@example.acsia.test",
+   "app_role": "engineer",
+   "job_role": "ATG architect",
+   "weekly_target": 2
+  },
+  {
+   "full_name": "Outgrow Leader",
+   "email": "leader@example.acsia.test",
+   "app_role": "leader",
+   "job_role": "Outgrow Leader",
+   "weekly_target": 5
+  },
+  {
+   "full_name": "CEO",
+   "email": "ceo@example.acsia.test",
+   "app_role": "ceo",
+   "job_role": "Leadership",
+   "weekly_target": 0
+  }
+ ],
+ "accounts": [
+  {
+   "name": "Flex Automotive USA",
+   "parent": "Flex",
+   "tier": "A - top 5",
+   "region": "US",
+   "country": "US"
+  },
+  {
+   "name": "Harman International (India)",
+   "parent": "Harman",
+   "tier": "A - top 5",
+   "region": "India",
+   "country": "IN"
+  },
+  {
+   "name": "Visteon Technical Centre India",
+   "parent": "Visteon",
+   "tier": "B - established",
+   "region": "India",
+   "country": "IN"
+  },
+  {
+   "name": "Panasonic Automotive Systems Europe",
+   "parent": "Panasonic",
+   "tier": "C - foothold",
+   "region": "Germany",
+   "country": "DE"
+  },
+  {
+   "name": "Bertrandt AG",
+   "parent": "Bertrandt",
+   "tier": "C - foothold",
+   "region": "Germany",
+   "country": "DE"
+  },
+  {
+   "name": "Ford",
+   "relationship_type": "End customer via partner",
+   "track": "LAND",
+   "region": "US",
+   "country": "US"
+  }
+ ],
+ "contacts": [
+  {
+   "name": "Dana Ruiz",
+   "title": "Validation Lead",
+   "account": "Flex Automotive USA",
+   "country": "US"
+  },
+  {
+   "name": "Mark Liu",
+   "title": "Programme Manager",
+   "account": "Flex Automotive USA",
+   "country": "US"
+  },
+  {
+   "name": "Klaus Berger",
+   "title": "Programme Manager, HUD",
+   "account": "Panasonic Automotive Systems Europe",
+   "country": "DE"
+  },
+  {
+   "name": "Suresh Iyer",
+   "title": "Engineering Manager",
+   "account": "Visteon Technical Centre India",
+   "country": "IN"
+  },
+  {
+   "name": "Lena Vogt",
+   "title": "Head of Test Automation",
+   "account": "Bertrandt AG",
+   "country": "DE"
+  },
+  {
+   "name": "Rohit Nair",
+   "title": "Director, IVI",
+   "account": "Harman International (India)",
+   "country": "IN"
+  }
+ ],
+ "programmes": [
+  {
+   "name": "Ford CIM P736 - SYS.1/SYS.2",
+   "contracting_account": "Flex Automotive USA",
+   "end_customer": "Ford",
+   "renewal_date": "2026-11-15",
+   "status": "Active"
+  }
+ ]
+}

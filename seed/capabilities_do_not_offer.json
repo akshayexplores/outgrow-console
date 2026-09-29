@@ -1,0 +1,44 @@
+[
+ {
+  "name": "ASIL C/D functional safety",
+  "service_line": "Functional Safety (ISO 26262, to ASIL B)",
+  "in_portfolio": false,
+  "do_not_offer": true,
+  "honest_boundary": "Rating 0, zero people. Say so plainly and offer ASIL B plus a partner."
+ },
+ {
+  "name": "Video processing and video algorithms",
+  "service_line": "ADAS/AD (safety & V&V wrapper)",
+  "in_portfolio": false,
+  "do_not_offer": true,
+  "honest_boundary": "Rating 0, zero people."
+ },
+ {
+  "name": "Audio management / audio processing / graphics rendering",
+  "service_line": "Digital Cockpit & Display / IVI",
+  "in_portfolio": false,
+  "do_not_offer": true,
+  "honest_boundary": "Rating 4, not in portfolio."
+ },
+ {
+  "name": "Hypervisor development",
+  "service_line": "Embedded / Platform (Linux, QNX, Android BSP)",
+  "in_portfolio": false,
+  "do_not_offer": true,
+  "honest_boundary": "Acsia does hypervisor CONFIGURATION only (rating 5). Be precise."
+ },
+ {
+  "name": "Security implementation in AUTOSAR",
+  "service_line": "Cybersecurity (ISO 21434, assessment-led)",
+  "in_portfolio": false,
+  "do_not_offer": true,
+  "honest_boundary": "Rating 4. Acsia assesses and tests; it does not build the stack."
+ },
+ {
+  "name": "Perception / ADAS algorithm development",
+  "service_line": "ADAS/AD (safety & V&V wrapper)",
+  "in_portfolio": false,
+  "do_not_offer": true,
+  "honest_boundary": "6 people total. Support the programme, do not own it."
+ }
+]

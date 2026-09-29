@@ -1,0 +1,62 @@
+[
+ {
+  "code": "OG0.1",
+  "label": "Proactive call / visit",
+  "rule": "Max one per conversation; not for meetings already scheduled."
+ },
+ {
+  "code": "OG1.1",
+  "label": "Did You Know",
+  "rule": "Must be something the customer can pay for."
+ },
+ {
+  "code": "OG1.2",
+  "label": "Reverse Did You Know",
+  "rule": "The customer names the opportunity."
+ },
+ {
+  "code": "OG2.1",
+  "label": "Pivot to sale",
+  "rule": ""
+ },
+ {
+  "code": "OG2.2",
+  "label": "Pivot to next conversation",
+  "rule": "The main action on long cycles."
+ },
+ {
+  "code": "OG2.3",
+  "label": "Proposal follow-up",
+  "rule": "Anything past the 4-8 week window."
+ },
+ {
+  "code": "OG2.4",
+  "label": "Pre-proposal follow-up",
+  "rule": ""
+ },
+ {
+  "code": "OG3.1",
+  "label": "Percentage of business",
+  "rule": "Two parts: share, then where the rest goes."
+ },
+ {
+  "code": "OG4.1",
+  "label": "Internal referral request",
+  "rule": "No yes/no questions."
+ },
+ {
+  "code": "OG4.2",
+  "label": "External referral request",
+  "rule": "Hand to AE / LAND engine."
+ },
+ {
+  "code": "OG5.1",
+  "label": "Testimonial shared",
+  "rule": ""
+ },
+ {
+  "code": "OG6.1",
+  "label": "Handwritten note",
+  "rule": "Personal only."
+ }
+]
