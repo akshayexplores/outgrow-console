@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { KeyRound, LogOut, Moon, Sparkles, Sun, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Bell, KeyRound, LogOut, Moon, Sparkles, Sun, ShieldCheck } from "lucide-react";
+import { markNotificationsRead } from "@/app/actions/notifications";
 import { useShell } from "./shell-context";
 import { initials } from "@/lib/format";
 import { ROLE_LABEL } from "@/lib/roles";
@@ -9,6 +11,44 @@ import { ROLE_LABEL } from "@/lib/roles";
 function setTheme(t: "light" | "dark") {
   document.documentElement.setAttribute("data-theme", t);
   try { localStorage.setItem("og-theme", t); } catch { /* private mode: keep the choice for this visit only */ }
+}
+
+function Bells() {
+  const { notifications } = useShell();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [seen, setSeen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const unread = seen ? 0 : notifications.filter((n) => !n.read).length;
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
+  }, [open]);
+
+  return (
+    <div className="role-menu" ref={ref}>
+      <button className="ava-btn" aria-haspopup="menu" aria-expanded={open} aria-label={unread ? `Notifications, ${unread} unread` : "Notifications"}
+        onClick={() => { setOpen((v) => !v); if (!open && unread) void markNotificationsRead().then(() => { setSeen(true); router.refresh(); }); }} style={{ position: "relative" }}>
+        <Bell size={16} aria-hidden />
+        {unread > 0 && <span className="badge" style={{ position: "absolute", top: -4, right: -4 }}>{unread}</span>}
+      </button>
+      {open && (
+        <div className="menu" role="menu" style={{ minWidth: 300, maxHeight: 380, overflowY: "auto" }}>
+          <div className="who"><b>Notifications</b></div>
+          {notifications.length === 0 && <div className="who" style={{ color: "var(--muted)" }}>Nothing yet.</div>}
+          {notifications.map((n) => {
+            const inner = <><b style={{ display: "block", fontSize: 13 }}>{n.title}</b>{n.body && <span style={{ fontSize: 12, color: "var(--muted)" }}>{n.body}</span>}</>;
+            return n.link ? <Link key={n.id} role="menuitem" href={n.link} onClick={() => setOpen(false)}>{inner}</Link> : <div key={n.id} className="who">{inner}</div>;
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function TopActions() {
@@ -31,6 +71,7 @@ export function TopActions() {
   return (
     <>
       <button className="askbtn" onClick={() => openAsk()}><Sparkles aria-hidden /><span>Ask Outgrow</span></button>
+      <Bells />
       <div className="role-menu" ref={ref}>
         <button className="ava-btn" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
           <span className="av" aria-hidden>{initials(me.full_name)}</span>

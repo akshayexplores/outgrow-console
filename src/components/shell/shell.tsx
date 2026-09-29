@@ -7,6 +7,7 @@ import { BarChart3, Briefcase, BookOpen, ListChecks, Plus, ShieldCheck, Sparkles
 import type { Me } from "@/lib/types";
 import type { NavItem, NavKey } from "@/lib/roles";
 import type { RefData } from "@/lib/data/ref";
+import type { NotificationItem } from "@/lib/data/notifications";
 import { ShellContext, type LogOpts, type PrepOpts, type ShellCtx } from "./shell-context";
 
 const LogSheet = dynamic(() => import("@/components/sheets/log-sheet").then((m) => m.LogSheet), { ssr: false });
@@ -23,8 +24,8 @@ type SheetState =
   | { kind: "ask"; opts: { prompt?: string }; key: number }
   | null;
 
-export function Shell({ me, nav, refData, canLog, badges, children }: {
-  me: Me; nav: NavItem[]; refData: RefData; canLog: boolean; badges: Partial<Record<NavKey, number>>; children: React.ReactNode;
+export function Shell({ me, nav, refData, canLog, badges, notifications, children }: {
+  me: Me; nav: NavItem[]; refData: RefData; canLog: boolean; badges: Partial<Record<NavKey, number>>; notifications: NotificationItem[]; children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const [sheet, setSheet] = useState<SheetState>(null);
@@ -37,12 +38,12 @@ export function Shell({ me, nav, refData, canLog, badges, children }: {
   const close = useCallback(() => setSheet(null), []);
 
   const ctx: ShellCtx = useMemo(() => ({
-    me, nav, ref: refData, canLog,
+    me, nav, ref: refData, canLog, notifications,
     openLog: (opts = {}) => setSheet({ kind: "log", opts, key: Date.now() }),
     openPrep: (opts) => setSheet({ kind: "prep", opts, key: Date.now() }),
     openAsk: (opts = {}) => setSheet({ kind: "ask", opts, key: Date.now() }),
     toast,
-  }), [me, nav, refData, canLog, toast]);
+  }), [me, nav, refData, canLog, notifications, toast]);
 
   return (
     <ShellContext.Provider value={ctx}>

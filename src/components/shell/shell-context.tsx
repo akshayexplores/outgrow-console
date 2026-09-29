@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 import type { Me } from "@/lib/types";
 import type { NavItem } from "@/lib/roles";
 import type { RefData } from "@/lib/data/ref";
+import type { NotificationItem } from "@/lib/data/notifications";
 
 export interface LogOpts { assignmentId?: string; contactId?: string; inboxId?: string; proxyPersonId?: string; text?: string }
 export interface PrepOpts { contactId: string; assignmentId?: string }
@@ -12,6 +13,7 @@ export interface ShellCtx {
   nav: NavItem[];
   ref: RefData;
   canLog: boolean;
+  notifications: NotificationItem[];
   openLog: (o?: LogOpts) => void;
   openPrep: (o: PrepOpts) => void;
   openAsk: (o?: { prompt?: string }) => void;
