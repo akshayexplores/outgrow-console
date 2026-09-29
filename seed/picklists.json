@@ -1,0 +1,584 @@
+{
+ "PL_ACCOUNT_LEVEL": [
+  "Group",
+  "Legal entity",
+  "Site / engineering centre"
+ ],
+ "PL_RELATIONSHIP_TYPE": [
+  "Direct customer",
+  "End customer via partner",
+  "Former customer",
+  "Pipeline only",
+  "Partner",
+  "Prospect (LAND)"
+ ],
+ "PL_TRACK": [
+  "EXPAND",
+  "LAND",
+  "MIXED"
+ ],
+ "PL_SEGMENT": [
+  "OEM",
+  "Tier-1",
+  "Tier-2",
+  "Engineering services intermediary",
+  "Tool provider",
+  "Silicon",
+  "Other"
+ ],
+ "PL_VEHICLE_DOMAIN": [
+  "Passenger",
+  "Commercial vehicle",
+  "Two-wheeler",
+  "Off-highway",
+  "Cross-platform"
+ ],
+ "PL_REGION": [
+  "India",
+  "Germany",
+  "Rest of EU",
+  "US",
+  "Japan",
+  "South Korea",
+  "China",
+  "Other"
+ ],
+ "PL_COUNTRY": [
+  "ISO 3166 list (seed: IN, DE, US, JP, KR, CN, FR, IT, SE, GB, NL, CH, AT, CZ, PT)"
+ ],
+ "PL_TIER": [
+  "A - top 5",
+  "B - established",
+  "C - foothold",
+  "D - pipeline only"
+ ],
+ "PL_CUSTOMER_STATUS": [
+  "Active",
+  "Dormant",
+  "Former",
+  "Pipeline only"
+ ],
+ "PL_REVENUE_TREND": [
+  "Growing",
+  "Flat",
+  "Decreasing",
+  "Stopped",
+  "Not enough data"
+ ],
+ "PL_ESTIMATE_SOURCE": [
+  "Customer-stated",
+  "Annual report",
+  "Analyst / research",
+  "Internal guess"
+ ],
+ "PL_POWER_MAP": [
+  "Not started",
+  "Partial",
+  "Complete"
+ ],
+ "PL_VENDOR_PANEL": [
+  "Approved",
+  "Approved for some categories",
+  "Registration in progress",
+  "Not registered",
+  "Unknown"
+ ],
+ "PL_CONTRACT": [
+  "None",
+  "NDA",
+  "MSA",
+  "MSA + rate card"
+ ],
+ "PL_FUNCTION": [
+  "V&V / Test",
+  "Functional safety",
+  "Cybersecurity",
+  "Software architecture",
+  "Platform / BSP",
+  "Cockpit / HMI / IVI",
+  "AUTOSAR / ECU software",
+  "E/E architecture",
+  "Powertrain / EV",
+  "ADAS / AD",
+  "Telematics / connectivity",
+  "Quality / process (ASPICE)",
+  "Requirements / systems engineering",
+  "Tools / DevOps",
+  "Programme management",
+  "Procurement",
+  "R&D / innovation",
+  "Executive",
+  "Other"
+ ],
+ "PL_PRESENCE": [
+  "Active delivery",
+  "Past delivery",
+  "Contact only",
+  "None known"
+ ],
+ "PL_DISCOVERY": [
+  "Internal referral",
+  "rDYK answer",
+  "Happy-customer interview",
+  "Research",
+  "Org chart",
+  "Delivery team"
+ ],
+ "PL_SENIORITY": [
+  "C-level",
+  "VP",
+  "Director",
+  "Head of",
+  "Manager",
+  "Lead",
+  "Engineer"
+ ],
+ "PL_BUYING_ROLE": [
+  "Economic buyer",
+  "Technical buyer",
+  "User buyer",
+  "Coach",
+  "Gatekeeper",
+  "Unknown"
+ ],
+ "PL_HML": [
+  "High",
+  "Medium",
+  "Low"
+ ],
+ "PL_DECISION": [
+  "Decides",
+  "Recommends",
+  "Influences",
+  "None"
+ ],
+ "PL_LANGUAGE": [
+  "English",
+  "German",
+  "Japanese",
+  "Korean",
+  "Mandarin",
+  "French",
+  "Italian",
+  "Swedish",
+  "Hindi",
+  "Other"
+ ],
+ "PL_CHANNEL": [
+  "Call",
+  "Voicemail + text",
+  "In person",
+  "Teams",
+  "WhatsApp",
+  "KakaoTalk",
+  "Video call",
+  "SMS",
+  "Handwritten note",
+  "(Email - NOT an action channel; follow-up/confirm only)"
+ ],
+ "PL_LEGAL_BASIS": [
+  "Legitimate interest",
+  "Consent",
+  "Contract",
+  "Unknown"
+ ],
+ "PL_CONTACT_STATUS": [
+  "Active",
+  "Left company",
+  "On leave",
+  "Do not contact"
+ ],
+ "PL_SENTIMENT": [
+  "Advocate",
+  "Positive",
+  "Neutral",
+  "Cautious",
+  "Detractor",
+  "Unknown"
+ ],
+ "PL_INTERVIEW_STATUS": [
+  "Not a candidate",
+  "Candidate",
+  "Invited",
+  "Scheduled",
+  "Done",
+  "Declined"
+ ],
+ "PL_PERMISSION": [
+  "None",
+  "Internal training only",
+  "External anonymised",
+  "External named"
+ ],
+ "PL_CONTACT_SOURCE": [
+  "Delivery",
+  "Internal referral",
+  "External referral",
+  "Happy-customer interview",
+  "Event",
+  "LAND handoff",
+  "Import"
+ ],
+ "PL_JOB_ROLE": [
+  "Delivery engineer",
+  "ATG architect",
+  "Project manager",
+  "Delivery lead",
+  "Account executive",
+  "SDR",
+  "Pre-sales",
+  "Marketing",
+  "Customer success",
+  "Leadership"
+ ],
+ "PL_OUTGROW_ROLE": [
+  "Owner (CEO)",
+  "Outgrow Leader",
+  "Administrator",
+  "Team manager",
+  "Frontline",
+  "Supporting"
+ ],
+ "PL_LOGGING_MODE": [
+  "Self",
+  "Manager proxy",
+  "Both"
+ ],
+ "PL_RELATIONSHIP_KIND": [
+  "Day-to-day delivery",
+  "Technical peer",
+  "Commercial",
+  "Executive",
+  "Former colleague"
+ ],
+ "PL_PROGRAMME_STATUS": [
+  "Won - not started",
+  "Active",
+  "Ramping down",
+  "Completed",
+  "On hold",
+  "Cancelled"
+ ],
+ "PL_ENGAGEMENT_MODEL": [
+  "T&M",
+  "Fixed price",
+  "ODC",
+  "Capacity pool",
+  "LiLA licence / subscription",
+  "Mixed"
+ ],
+ "PL_ASPICE": [
+  "SYS.1",
+  "SYS.2",
+  "SYS.3",
+  "SYS.4",
+  "SYS.5",
+  "SWE.1",
+  "SWE.2",
+  "SWE.3",
+  "SWE.4",
+  "SWE.5",
+  "SWE.6",
+  "SUP",
+  "MAN"
+ ],
+ "PL_RAG": [
+  "Green",
+  "Amber",
+  "Red"
+ ],
+ "PL_PROGRAMME_CONTACT_ROLE": [
+  "Sponsor",
+  "Customer PM",
+  "Technical lead",
+  "Quality",
+  "Procurement",
+  "End user"
+ ],
+ "PL_MILESTONE_TYPE": [
+  "SOP",
+  "Release drop",
+  "Safety case submission",
+  "ASPICE audit",
+  "Phase gate",
+  "Sprint demo",
+  "Contract renewal"
+ ],
+ "PL_MILESTONE_STATUS": [
+  "Planned",
+  "Done",
+  "Slipped",
+  "Cancelled"
+ ],
+ "PL_CURRENCY": [
+  "USD",
+  "EUR",
+  "INR",
+  "JPY",
+  "KRW",
+  "GBP"
+ ],
+ "PL_LEVER": [
+  "New service line (cross-sell)",
+  "More volume (same scope)",
+  "New buyer (internal referral)",
+  "New site / geography",
+  "Engagement model change",
+  "Renewal / extension",
+  "Win-back"
+ ],
+ "PL_OPP_ORIGIN": [
+  "Outgrow action",
+  "Inbound request",
+  "RFQ received",
+  "AE-initiated",
+  "Partner"
+ ],
+ "PL_OPP_STAGE": [
+  "Identified",
+  "Qualifying",
+  "Pre-proposal",
+  "Proposal sent",
+  "Negotiation",
+  "Won",
+  "Lost",
+  "Parked"
+ ],
+ "PL_VALUE_BASIS": [
+  "One-off",
+  "Annualised run-rate",
+  "Multi-year total"
+ ],
+ "PL_LOST_REASON": [
+  "Price",
+  "Capability",
+  "Timing",
+  "Incumbent",
+  "No decision",
+  "Vendor panel / procurement",
+  "Other"
+ ],
+ "PL_WHITESPACE_STATUS": [
+  "Buying from Acsia",
+  "Held by competitor",
+  "In-house",
+  "Need confirmed - unsourced",
+  "Need likely",
+  "Not relevant",
+  "Unknown",
+  "Acsia can't offer"
+ ],
+ "PL_WHITESPACE_SOURCE": [
+  "Derived from programmes",
+  "rDYK answer",
+  "Interview",
+  "Research",
+  "AE judgement"
+ ],
+ "PL_YES_NO_UNKNOWN": [
+  "Yes",
+  "No",
+  "Unknown"
+ ],
+ "PL_PRIORITY_123": [
+  "1 - Lead with it",
+  "2 - Offer with proof",
+  "3 - Learn first (rDYK)"
+ ],
+ "PL_VENDOR_POSITION": [
+  "Incumbent",
+  "Co-supplier",
+  "Being evaluated",
+  "Displaced by Acsia",
+  "Won against Acsia"
+ ],
+ "PL_INTEL_SOURCE": [
+  "Action",
+  "Interview",
+  "Delivery team",
+  "Lost deal",
+  "Research",
+  "News",
+  "Market intel"
+ ],
+ "PL_SHARE_SCOPE": [
+  "All outsourced engineering",
+  "One service line",
+  "One programme"
+ ],
+ "PL_CONFIDENCE": [
+  "LEAD",
+  "OFFER",
+  "OFFER W/ REF",
+  "GUARDED",
+  "DO NOT OFFER"
+ ],
+ "PL_STACK_AREA": [
+  "MCU / AUTOSAR stack",
+  "SOC platform",
+  "Application & HMI",
+  "Safety, security & compliance",
+  "Connectivity & networking",
+  "Tooling & observability",
+  "Integration, V&V & quality",
+  "Programme & process",
+  "Media & graphics (gap zone)",
+  "Platform (LiLA)"
+ ],
+ "PL_PLAY_TYPE": [
+  "DYK",
+  "Reverse DYK",
+  "Pivot to sale",
+  "Pivot to next",
+  "% of business",
+  "Internal referral",
+  "External referral",
+  "Testimonial",
+  "Voicemail premise",
+  "Follow-up text",
+  "List script",
+  "Displacement probe"
+ ],
+ "PL_ACTION_CODE": [
+  "OG0.1 Proactive call / visit",
+  "OG1.1 Did You Know",
+  "OG1.2 Reverse Did You Know",
+  "OG2.1 Pivot to sale",
+  "OG2.2 Pivot to next conversation",
+  "OG2.3 Proposal follow-up",
+  "OG2.4 Pre-proposal follow-up",
+  "OG3.1 Percentage of business",
+  "OG4.1 Internal referral request",
+  "OG4.2 External referral request",
+  "OG5.1 Testimonial shared",
+  "OG6.1 Handwritten note"
+ ],
+ "PL_ADJACENCY": [
+  "Vertical stack",
+  "Lifecycle (next phase)",
+  "Programme twin (other silicon)",
+  "Toolchain attach",
+  "Compliance pull",
+  "Evidence chain",
+  "Downshift to what Acsia holds",
+  "Sister platform",
+  "Off-board twin",
+  "LiLA standing"
+ ],
+ "PL_APPROVAL": [
+  "Draft",
+  "Approved - internal",
+  "Approved - external",
+  "Retired"
+ ],
+ "PL_PERIOD": [
+  "Month",
+  "Week"
+ ],
+ "PL_COMPETITOR_TYPE": [
+  "Engineering services provider",
+  "Tool vendor",
+  "In-house team",
+  "Staffing",
+  "Silicon vendor services"
+ ],
+ "PL_TOUCH_TYPE": [
+  "Proactive call",
+  "Voicemail + text",
+  "Unscheduled visit (on site)",
+  "Scheduled meeting",
+  "Inbound (customer-initiated)",
+  "Call-when-emailed",
+  "Handwritten note"
+ ],
+ "PL_RESPONSE": [
+  "Positive",
+  "Neutral",
+  "Not now",
+  "No answer",
+  "Negative"
+ ],
+ "PL_CAPTURE": [
+  "Web",
+  "Mobile",
+  "Teams bot",
+  "Text to manager (AI-parsed)",
+  "Voice note (AI-parsed)"
+ ],
+ "PL_VALUE_STAGE": [
+  "Opportunity",
+  "Proposal",
+  "Closed"
+ ],
+ "PL_INSIGHT_TYPE": [
+  "Interest",
+  "Pain point",
+  "Priority / initiative",
+  "Talking point",
+  "Rapport",
+  "Account news / signal",
+  "Sourcing timing",
+  "Budget",
+  "Objection",
+  "Didn't know you did that",
+  "Gives to other vendor",
+  "Rate comparison"
+ ],
+ "PL_INSIGHT_STATUS": [
+  "Open",
+  "Used in a touch",
+  "Converted",
+  "Stale"
+ ],
+ "PL_REFERRAL_TYPE": [
+  "Internal (same account group)",
+  "External (new logo)"
+ ],
+ "PL_INTRO_METHOD": [
+  "They introduce us",
+  "Use their name",
+  "We reach out"
+ ],
+ "PL_REFERRAL_STATUS": [
+  "Asked",
+  "Named",
+  "Intro promised",
+  "Intro made",
+  "Meeting held",
+  "Opportunity",
+  "Handed to LAND/AE",
+  "Dead"
+ ],
+ "PL_LIST_ENTITY": [
+  "Account",
+  "Contact",
+  "Opportunity"
+ ],
+ "PL_ASSIGNMENT_STATUS": [
+  "Open",
+  "Done",
+  "Partly done",
+  "Rolled over",
+  "Skipped"
+ ],
+ "PL_STORY_STATUS": [
+  "Nominated",
+  "Featured",
+  "Archived"
+ ],
+ "PL_PERSEVERANCE_SCOPE": [
+  "Company Top 10",
+  "Personal Top 5"
+ ],
+ "PL_SCORECARD_STATUS": [
+  "Draft",
+  "Awaiting commentary",
+  "Published"
+ ],
+ "PL_MEETING_TYPE": [
+  "Monday huddle",
+  "Monthly 1:1",
+  "Quarterly planning",
+  "Interview playback"
+ ]
+}
