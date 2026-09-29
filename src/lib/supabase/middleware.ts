@@ -22,11 +22,14 @@ export async function updateSession(request: NextRequest) {
   });
 
   // getUser() validates the JWT with the Auth server (never trust getSession() on the server).
-  const { data } = await supabase.auth.getUser();
+  // If the Auth server can't be reached, treat the visitor as signed out rather than failing the request.
+  const { data } = await supabase.auth.getUser().catch(() => ({ data: { user: null } }));
   const path = request.nextUrl.pathname;
   const isPublic = PUBLIC.some((re) => re.test(path));
 
   if (!data.user && !isPublic) {
+    // Browser fetches to our own API (streaming AI) need a machine-readable answer, not a redirect to an HTML login page.
+    if (path.startsWith("/api/")) return NextResponse.json({ message: "You're signed out. Sign in again." }, { status: 401, headers: { "Cache-Control": "no-store" } });
     const dest = request.nextUrl.clone();
     dest.pathname = "/login";
     dest.search = path === "/" ? "" : `?next=${encodeURIComponent(path + request.nextUrl.search)}`;
