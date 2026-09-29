@@ -188,7 +188,7 @@ export async function importEmployees(rows: unknown[], sendInvites: boolean): Pr
   if (!Array.isArray(rows) || rows.length === 0 || rows.length > 500) return errResult("Import between 1 and 500 people at a time.");
   const existing = await existingEmails();
   const { checks, valid } = checkRows(rows, existing);
-  const skipped = checks.filter((c) => !c.ok).length;
+  let skipped = checks.filter((c) => !c.ok).length;
   const supabase = await createClient();
   const idByEmail = new Map(existing);
   let added = 0, invited = 0, inviteFailures = 0;
@@ -196,7 +196,7 @@ export async function importEmployees(rows: unknown[], sendInvites: boolean): Pr
   const inserted: { email: string; person_id: string; managerEmail: string }[] = [];
   for (const v of valid) {
     const { data, error } = await supabase.from("acsia_people").insert(toRow(v.input)).select("person_id,email").single();
-    if (error || !data) { inviteFailures += 0; continue; }
+    if (error || !data) { skipped++; continue; }
     added++;
     idByEmail.set(data.email.toLowerCase(), data.person_id);
     inserted.push({ email: data.email, person_id: data.person_id, managerEmail: v.managerEmail });

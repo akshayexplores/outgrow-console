@@ -1,140 +1,90 @@
 # Outgrow Console
 
-Operational console for running the Outgrow proactive-sales system against your organisation's **existing delivery and programme accounts**.
+Acsia's internal app for running the **Outgrow** method (proactive, permissioned selling inside existing customer accounts). One admin, invite-only employees, role-aware screens, and a data model that never shows revenue, pipeline values or competitor names to delivery engineers.
 
-No build step. No framework. Static files, deployable to Vercel in about two minutes.
+> **Status: Milestone 0 (foundation).** Sign-in, roles, admin (employees, settings, data import, audit), the full database with row-level security, and the app shell are built and deployed. The Log / Prep / Ask sheets, Today, Accounts, Team, Scorecard, Library and the AI operator arrive in Milestones 1 and 2. Screens not built yet show a "coming next" page. See `LIMITATIONS.md` and `DECISIONS.md`.
 
----
+## Stack
 
-## What this is for
+Next.js 15 (App Router, TypeScript strict) on Vercel · Supabase (Postgres, Auth, RLS) · Tailwind CSS 4 + Radix · zod at every boundary · server components and server actions · OpenRouter for AI (server-side only, from M1).
 
-Most B2B sales processes run through a defined set of stages, then hand off to Delivery and stop. There is no post-sale motion. Meanwhile your own engineers sit inside customer programmes every week holding trust no salesperson could buy, next to spend nobody asks about.
-
-This console runs the system that fills that gap: a small number of deliberately trivial customer-facing behaviours, done daily, tracked as **inputs** rather than outcomes.
-
-**Scope boundary.** This holds accounts, contacts, lists, assignments and logged actions. It does **not** hold deal stage, MEDDPICC or Blue Sheet data — those stay in your CRM. Keeping that line is what stops this becoming a second source of truth.
-
----
-
-## Deploy
-
-### 1. Vercel
-
-Import the repo at [vercel.com/new](https://vercel.com/new) — no build command, no framework preset. `vercel.json` sets the headers.
-
-Or from the CLI:
+## Run it locally
 
 ```bash
-npm i -g vercel
-vercel            # preview
-vercel --prod     # production
+npm install
+cp .env.example .env.local      # fill in the values (see below)
+npm run dev                     # http://localhost:3000
 ```
 
-### 2. Shared storage (do this before more than one person uses it)
+Node 22.
 
-Out of the box the app stores data in the browser (`localStorage`). That is fine for evaluating it, but the team scorecard is only meaningful when everyone writes to the same place — and participation, the number the whole system runs on, is meaningless without it.
+## Environment variables
 
-1. Create a free project at [supabase.com](https://supabase.com)
-2. Open the SQL editor and run [`supabase/schema.sql`](./supabase/schema.sql)
-3. Paste your Project URL and anon/public key into [`config.js`](./config.js)
-4. Redeploy
+Names only. Put values in Vercel (Project → Settings → Environment Variables) or a local, git-ignored `.env.local`. Never commit them.
 
-```js
-window.OUTGROW_CONFIG = {
-  supabaseUrl:     "https://xxxxx.supabase.co",
-  supabaseAnonKey: "eyJhbGci...",
-  workspaceId:     "default"
-};
+| Variable | Where it's used | Secret? |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Browser + server | No |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser + server (Supabase publishable key; safe because RLS protects data) | No |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Server only**: admin invites, sign-in links, seeding, cron | **Yes** |
+| `NEXT_PUBLIC_APP_URL` | Auth redirects, OpenRouter referer | No |
+| `ADMIN_EMAIL` | The single admin. Synced to `app_settings.admin_email` by the seed | No |
+| `ALLOWED_EMAIL_DOMAIN` | Optional second sign-up gate (e.g. `acsiatech.com`) | No |
+| `APP_TIMEZONE` | Defaults to `Asia/Kolkata` | No |
+| `OPENROUTER_API_KEY` | **Server only**, used from M1 | **Yes** |
+| `AI_MONTHLY_BUDGET_USD` | AI spend alert threshold | No |
+| `CRON_SECRET` | Protects `/api/cron/*` (Vercel sends it as a Bearer token) | **Yes** |
+
+## Database
+
+Everything lives in `supabase/migrations/` (0001 to 0012) and is applied in order.
+
+- **Default-deny.** Every table has RLS on. Business writes only go through `SECURITY DEFINER` functions (`log_conversation`, `create_assignment`, and so on) that re-check the caller's role.
+- **Roles come from the database on every request** (`get_me()`), never from a token claim.
+- **Mixed tables** (accounts, contacts, opportunities, actions...) are read through `*_safe` views that return `NULL` for restricted columns, so a delivery engineer's API calls physically cannot return revenue, pipeline values or competitor names.
+- **Sign-up gate.** The Before User Created hook (`public.hook_before_user_created`) rejects anyone not on the roster (or not the admin).
+
+### Tests
+
+`supabase/tests/rls.sql` is one pure-SQL file: 272 assertions across every role (anonymous, stranger, engineer, PM, delivery lead, AE, SDR, pre-sales, leader, CEO, admin), the log-a-conversation rules, the sign-up gate, scorecard rules and "remove examples". It runs in a single transaction that always rolls back, so it is safe to run repeatedly.
+
+```bash
+# Local Postgres (uses a stub of Supabase's auth schema in supabase/tests/00_stub_supabase.sql)
+npm run test:rls
 ```
 
-The anon key is designed to be public and is safe in a client bundle **provided row-level security is on**, which `schema.sql` sets up. Never put the `service_role` key here.
+A passing run prints `RLS_TESTS_PASSED <n> assertions`. Do not run this against a database that holds real data unless you understand it rolls back; it creates fixtures inside its transaction.
 
-The sidebar shows which mode you're in: *This browser only* or *Shared storage*.
+### Seed (reference data only)
 
----
+```bash
+NEXT_PUBLIC_SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... ADMIN_EMAIL=... npm run seed
+```
+
+Idempotent. It loads the library (service lines, plays, picklists, action codes, channel rules, focus calendar, list definitions, AI routes) and sets the admin email. Demo accounts and people are **never** seeded; the admin loads them from **Admin → Data import**, and removes them with one click.
+
+## Deploying
+
+1. Create a Supabase project and apply `supabase/migrations/*.sql` in order.
+2. Supabase → Authentication → **Hooks** → enable **Before User Created** → Postgres function `public.hook_before_user_created`.
+3. Supabase → Authentication → **URL Configuration** → set Site URL to the app URL and add `<app URL>/**` to Redirect URLs.
+4. Create a Vercel project from this repo (branch `v2`) and set the environment variables above.
+5. Sign in as the admin, open **Admin → Data import → Load library**, add employees under **Admin → Employees**.
+6. Before inviting real employees, set up custom SMTP in Supabase (Authentication → Emails → SMTP Settings). On the Free plan the built-in mailer only reaches Supabase team members; until then use **Copy sign-in link** on the Employees screen.
 
 ## Layout
 
 ```
-index.html            app shell
-config.js             runtime config — Supabase keys go here
-styles.css
-src/
-  content.js          THE PLAYBOOK — every script, objection, guide. Plain data, edit freely.
-  seed.js             starting accounts, contacts, people. Replace with the real base.
-  store.js            storage adapter — localStorage | Supabase
-  util.js             helpers
-  app.js              views, modals, handlers
-supabase/schema.sql   one table, RLS on
-vercel.json
+src/app/            routes (login, auth/*, welcome, (app)/* signed-in screens)
+src/components/     shell, sheets, ui
+src/lib/            env, roles, dates, outgrow rules, import, seeds, supabase clients
+supabase/migrations database
+supabase/tests      RLS and business-rule tests
+seed/               reference data (JSON)
+scripts/            seed, migration build, scratch DB rebuild
 ```
 
-**`src/content.js` is the file to edit.** Every script, objection response, interview question and channel rule lives there as plain data, so anyone on the team can change the words without touching application code. Change them there and they change everywhere — including the script that appears next to someone at the moment they're about to make the call.
+## Notes
 
----
-
-## What's in it
-
-**Do the work**
-- **My week** — your assignments, your streak, one-click logging
-- **Lists** — all ten customer lists, grouped Pipeline / Wallet share / Decay, each with its own call approach, opener, questions, pivot, voicemail and follow-up text
-- **Playbook** — the eight action scripts, the three-part call, per-list scripts, objection responses for your own team and for customers, channel rules by geography, the cross-sell map, the pocket card, the cadence, the doctrine
-
-**Run the system**
-- **Assign** — Monday assignments with mechanical suggestions derived from the lists, so nobody hand-types twenty rows
-- **Scorecard** — leading indicators only, participation, streaks, action mix, and the actions-per-opportunity measurement that becomes the week-12 conversion read
-
-**Build the foundation**
-- **Interviews** — Happy Customer Interview tracker with the full protocol, and a gate on the Assign screen until the target is met
-- **Testimonials** — harvested automatically from interview quotes; feeds the "Testimonial Shared" action
-
-**Signals** — the cross-account views that are invisible one account at a time: never-contacted economic buyers, single-threaded accounts, lowest wallet share.
-
----
-
-## The lists
-
-Ten of the book's eleven. Cold prospects are deliberately excluded — that list belongs to your existing outbound engine, and running it here would put two systems on the same accounts.
-
-| Group | List | Membership |
-|---|---|---|
-| Pipeline | Quotes & Proposals Outstanding | manual |
-| Pipeline | Pre-Quote — Nothing Sent Yet | manual |
-| Pipeline | Warm — Evaluated, Didn't Buy | manual |
-| Wallet share | Large Accounts Who Can Buy More | manual |
-| Wallet share | Small & Medium Accounts Who Can Buy More | manual |
-| Wallet share | Revenue Autopilot | manual |
-| Decay | Zero Dark 30 | **derived** — 30–180 days since last touch |
-| Decay | Silent 6+ Months | **derived** — over 180 days |
-| Decay | Decreasing Revenue | manual (needs billing history from finance) |
-| Decay | Used to Buy, Stopped | manual |
-
-Accounts can sit on several lists. That's a feature — it means two different people have a reason to reach out.
-
----
-
-## Things built in on purpose
-
-- **Logging is three fields and states "proactive only" at the point of entry.** Every field added past that trades a real customer behaviour for a data point.
-- **Managers can log on behalf of someone else.** The field pattern is: engineer asks one question on site, texts their manager from the car, manager logs it. Asking an engineer to open a CRM at a customer's office is asking them not to bother.
-- **The scorecard shows no closed revenue.** Cycles can run 9–18 months. Measuring hits before the swings convert is the fastest way to kill the programme.
-- **No borrowed conversion rates.** Published figures from distribution businesses (20% DYK, 80% rDYK, 25% pivot) do not transfer and appear nowhere. The tool measures your own and shows nothing until there's volume.
-- **Participation below 60% triggers a leadership prompt, not a team one.** When adoption sags the cause is almost never the frontline.
-- **Logging an opportunity prompts for the story immediately** — a week later, in a separate workflow, it never gets collected.
-
----
-
-## Local development
-
-ES modules need a server; `file://` won't work.
-
-```bash
-python3 -m http.server 8000
-# then open http://localhost:8000
-```
-
----
-
-## Companion
-
-An "Outgrow" coaching skill is the diagnostics and rollout-sequence layer. This console is the operational layer. They share the same source material.
+- The repository's older static prototype files (`index.html`, `styles.css`, `config.js`) are still present on this branch and are unused by the app. They remain untouched on `main`.
+- No `package-lock.json` is committed yet. Direct dependencies are pinned to exact versions in `package.json`.
