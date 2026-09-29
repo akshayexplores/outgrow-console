@@ -1,0 +1,92 @@
+[
+ {
+  "period_type": "Month",
+  "period_start": "2026-10-01",
+  "period_end": "2026-10-31",
+  "dyk_focus_play_ids": [
+   "DYK-01",
+   "DYK-03"
+  ],
+  "theme": "LiLA",
+  "referral_focus": "Commercial-vehicle side and other sites at every multi-site account",
+  "prompt_card_questions": [
+   "What else are you working on that we might be able to help with?",
+   "What are you doing by hand today that you wish you weren't?"
+  ]
+ },
+ {
+  "period_type": "Month",
+  "period_start": "2026-11-01",
+  "period_end": "2026-11-30",
+  "dyk_focus_play_ids": [
+   "DYK-20",
+   "DYK-21"
+  ],
+  "theme": "ASPICE + LiLA",
+  "referral_focus": "Commercial-vehicle side and other sites at every multi-site account",
+  "prompt_card_questions": [
+   "What else are you working on that we might be able to help with?",
+   "What are you doing by hand today that you wish you weren't?"
+  ]
+ },
+ {
+  "period_type": "Month",
+  "period_start": "2026-12-01",
+  "period_end": "2026-12-31",
+  "dyk_focus_play_ids": [
+   "DYK-02",
+   "DYK-15"
+  ],
+  "theme": "V&V depth",
+  "referral_focus": "Commercial-vehicle side and other sites at every multi-site account",
+  "prompt_card_questions": [
+   "What else are you working on that we might be able to help with?",
+   "What are you doing by hand today that you wish you weren't?"
+  ]
+ },
+ {
+  "period_type": "Month",
+  "period_start": "2027-01-01",
+  "period_end": "2027-01-31",
+  "dyk_focus_play_ids": [
+   "DYK-17",
+   "DYK-18"
+  ],
+  "theme": "Functional safety to ASIL B",
+  "referral_focus": "Commercial-vehicle side and other sites at every multi-site account",
+  "prompt_card_questions": [
+   "What else are you working on that we might be able to help with?",
+   "What are you doing by hand today that you wish you weren't?"
+  ]
+ },
+ {
+  "period_type": "Month",
+  "period_start": "2027-02-01",
+  "period_end": "2027-02-28",
+  "dyk_focus_play_ids": [
+   "DYK-08",
+   "DYK-11"
+  ],
+  "theme": "Android / Linux platform depth",
+  "referral_focus": "Commercial-vehicle side and other sites at every multi-site account",
+  "prompt_card_questions": [
+   "What else are you working on that we might be able to help with?",
+   "What are you doing by hand today that you wish you weren't?"
+  ]
+ },
+ {
+  "period_type": "Month",
+  "period_start": "2027-03-01",
+  "period_end": "2027-03-31",
+  "dyk_focus_play_ids": [
+   "DYK-01",
+   "DYK-03"
+  ],
+  "theme": "LiLA again",
+  "referral_focus": "Commercial-vehicle side and other sites at every multi-site account",
+  "prompt_card_questions": [
+   "What else are you working on that we might be able to help with?",
+   "What are you doing by hand today that you wish you weren't?"
+  ]
+ }
+]

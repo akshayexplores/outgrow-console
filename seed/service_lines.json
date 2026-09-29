@@ -1,0 +1,130 @@
+[
+ {
+  "name": "AUTOSAR",
+  "short_code": "AUT",
+  "confidence_band": "LEAD",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 1
+ },
+ {
+  "name": "Functional Safety (ISO 26262, to ASIL B)",
+  "short_code": "FUSA",
+  "confidence_band": "OFFER",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 2
+ },
+ {
+  "name": "Cybersecurity (ISO 21434, assessment-led)",
+  "short_code": "CYB",
+  "confidence_band": "OFFER W/ REF",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 3
+ },
+ {
+  "name": "ADAS/AD (safety & V&V wrapper)",
+  "short_code": "ADAS",
+  "confidence_band": "OFFER W/ REF",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 4
+ },
+ {
+  "name": "Embedded / Platform (Linux, QNX, Android BSP)",
+  "short_code": "EMB",
+  "confidence_band": "LEAD",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 5
+ },
+ {
+  "name": "EV & e-Mobility",
+  "short_code": "EV",
+  "confidence_band": "OFFER",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 6
+ },
+ {
+  "name": "Telematics / Connectivity",
+  "short_code": "TEL",
+  "confidence_band": "OFFER",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 7
+ },
+ {
+  "name": "Digital Cockpit & Display / IVI",
+  "short_code": "IVI",
+  "confidence_band": "LEAD",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 8
+ },
+ {
+  "name": "V&V and Test",
+  "short_code": "VV",
+  "confidence_band": "LEAD",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 9
+ },
+ {
+  "name": "ASPICE process consulting",
+  "short_code": "ASP",
+  "confidence_band": "OFFER",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 10
+ },
+ {
+  "name": "System engineering / requirements",
+  "short_code": "SYS",
+  "confidence_band": "OFFER",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 11
+ },
+ {
+  "name": "Programme management",
+  "short_code": "PM",
+  "confidence_band": "OFFER",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 12
+ },
+ {
+  "name": "Cloud / Data / Backend",
+  "short_code": "CLD",
+  "confidence_band": "OFFER",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 13
+ },
+ {
+  "name": "Body / Comfort",
+  "short_code": "BODY",
+  "confidence_band": "OFFER W/ REF",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 14
+ },
+ {
+  "name": "LiLA (agentic AI platform)",
+  "short_code": "LILA",
+  "confidence_band": "LEAD",
+  "is_lila": true,
+  "active": true,
+  "sort_order": 15
+ },
+ {
+  "name": "None / relationship only",
+  "short_code": "NONE",
+  "confidence_band": "LEAD",
+  "is_lila": false,
+  "active": true,
+  "sort_order": 16
+ }
+]
