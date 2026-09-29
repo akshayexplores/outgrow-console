@@ -406,6 +406,62 @@ begin
   perform pg_temp.ok(pg_temp.n('leader', 'select count(*) from public.ai_routes') = 1 and pg_temp.n('pm', 'select count(*) from public.ai_routes') = 0, 'ai_routes: leader reads, pm does not');
   perform pg_temp.ok(pg_temp.n('leader', $$with x as (update public.ai_routes set primary_model = 'a/b' returning 1) select count(*) from x$$) = 1 and pg_temp.n('pm', $$with x as (update public.ai_routes set enabled = false returning 1) select count(*) from x$$) = 0, 'ai_routes: only leader updates');
 
+  ------------------------------------------------------------------ 7b. M1 additions: assignment "why now", draft → approve notifications, AI usage counters
+  declare
+    c3 uuid; d1 uuid; d2 uuid; n0 int; usage_row record; pm_id uuid;
+  begin
+    insert into public.contacts (first_name, last_name, account_id, contact_status, country, relationship_strength)
+    values ('Mira', 'Kapoor', acc1, 'Active', 'US', 2) returning contact_id into c3;
+
+    -- a Draft assignment does not notify; why_now is trimmed to 60 characters
+    n0 := pg_temp.n('engineer', 'select count(*) from public.notifications');
+    d1 := pg_temp.exec_as('lead', format($$select public.create_assignment(%L::jsonb)::text$$, jsonb_build_object(
+      'assignee_id', pg_temp.id('eng'), 'contact_id', c1, 'instruction', 'Ask about the V&V roadmap', 'why_now', repeat('x', 80), 'status', 'Draft')))::uuid;
+    perform pg_temp.ok((select length(why_now) from public.assignments where assignment_id = d1) = 60, 'create_assignment stores why_now, trimmed to 60 characters');
+    perform pg_temp.ok((select status from public.assignments where assignment_id = d1) = 'Draft', 'Draft assignment stays Draft');
+    perform pg_temp.ok(pg_temp.n('engineer', 'select count(*) from public.notifications') = n0, 'Draft assignment does not notify the assignee');
+
+    -- editing: only the manager, and only while Draft/Open
+    perform pg_temp.raises('pm', format($$select public.update_assignment(%L, '{"why_now":"hijack"}'::jsonb)::text$$, d1), 'NOT_ALLOWED');
+    perform pg_temp.raises('lead', format($$select public.update_assignment(%L, '{"instruction":"   "}'::jsonb)::text$$, d1), 'EMPTY');
+    perform pg_temp.exec_as('lead', format($$select public.update_assignment(%L, '{"why_now":"Renewal in 30 days"}'::jsonb)::text$$, d1));
+    perform pg_temp.ok((select why_now from public.assignments where assignment_id = d1) = 'Renewal in 30 days', 'update_assignment edits why_now');
+    perform pg_temp.exec_as('lead', format($$select public.update_assignment(%L, '{"why_now":""}'::jsonb)::text$$, d1));
+    perform pg_temp.ok((select why_now from public.assignments where assignment_id = d1) is null, 'an empty why_now clears to null');
+
+    -- approving opens it and notifies exactly once
+    perform pg_temp.ok(pg_temp.exec_as('lead', format($$select public.approve_assignments(array[%L]::uuid[], true)::text$$, d1))::int = 1, 'lead approves a Draft');
+    perform pg_temp.ok((select status from public.assignments where assignment_id = d1) = 'Open', 'approved assignment is Open');
+    perform pg_temp.ok(pg_temp.n('engineer', 'select count(*) from public.notifications') = n0 + 1, 'approving notifies the assignee once');
+    perform pg_temp.ok(pg_temp.exec_as('lead', format($$select public.approve_assignments(array[%L]::uuid[], true)::text$$, d1))::int = 0, 'approving twice is a no-op');
+    perform pg_temp.raises('lead', format($$select public.update_assignment(%L, '{"assignee_id":"%s"}'::jsonb)::text$$, d1, pg_temp.id('ae')), 'only assign your own team');
+
+    -- creating Open directly for someone else notifies; assigning to yourself does not
+    n0 := pg_temp.n('engineer', 'select count(*) from public.notifications');
+    d2 := pg_temp.exec_as('lead', format($$select public.create_assignment(%L::jsonb)::text$$, jsonb_build_object(
+      'assignee_id', pg_temp.id('eng'), 'contact_id', c3, 'instruction', 'Say hello to Mira')))::uuid;
+    perform pg_temp.ok(pg_temp.n('engineer', 'select count(*) from public.notifications') = n0 + 1, 'an Open assignment for someone else notifies them');
+    perform pg_temp.ok(pg_temp.n('other_lead', 'select count(*) from public.assignments where contact_id is not null') = 0, 'another lead still sees none of it');
+    perform pg_temp.ok(pg_temp.n('engineer', format('select count(*) from public.assignments where assignment_id = %L', d2)) = 1, 'the assignee sees it');
+    perform pg_temp.ok(pg_temp.n('engineer', $$select count(*) from public.notifications where kind = 'assignment' and person_id <> (select public.current_person_id())$$) = 0, 'notifications are private to their owner');
+
+    -- the ai_usage helper is for the server only
+    insert into public.ai_runs (job, model, person_id, status, cost_usd) values
+      ('capture', 'x/y', pg_temp.id('pm'), 'ok', 0.5), ('capture', 'x/y', pg_temp.id('pm'), 'rate_limited', 0),
+      ('brief', 'x/y', pg_temp.id('pm'), 'ok', 0.25), ('plan', 'x/y', null, 'ok', 1.0);
+    perform pg_temp.raises('pm', format($$select public.ai_usage(%L, now())::text$$, pg_temp.id('pm')), 'permission denied');
+    perform pg_temp.raises('leader', format($$select public.ai_usage(%L, now())::text$$, pg_temp.id('pm')), 'permission denied');
+    perform pg_temp.raises('anon', format($$select public.ai_usage(%L, now())::text$$, pg_temp.id('pm')), 'permission denied');
+    pm_id := pg_temp.id('pm');
+    execute 'set local role service_role';
+    select * into usage_row from public.ai_usage(pm_id, date_trunc('month', now()));
+    execute 'reset role';
+    perform pg_temp.ok(usage_row.last_minute = 2 and usage_row.last_day = 2, 'ai_usage counts a person''s own model calls and skips rate_limited rows');
+    perform pg_temp.ok(usage_row.month_cost = 1.75, 'ai_usage sums the whole app''s spend for the month');
+    perform pg_temp.ok(pg_temp.n('pm', 'select count(*) from public.ai_runs') = 3, 'pm reads only their own AI runs');
+    perform pg_temp.ok(pg_temp.n('leader', 'select count(*) from public.ai_runs') = 4, 'leader reads all AI runs');
+  end;
+
   ------------------------------------------------------------------ 8. admin
   perform pg_temp.ok(pg_temp.exec_as('admin', 'select (public.get_me() ->> ''is_admin'')') = 'true', 'admin get_me works without a roster row');
   perform pg_temp.ok(pg_temp.n('admin', 'select count(ttm_billed_usd) from public.accounts_safe') = 2, 'admin sees everything');
