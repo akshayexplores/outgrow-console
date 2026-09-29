@@ -1,23 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "cleanUrls": true,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
-      ]
-    },
-    {
-      "source": "/config.js",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, max-age=0" }]
-    },
-    {
-      "source": "/src/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }]
-    }
+  "framework": "nextjs",
+  "crons": [
+    { "path": "/api/cron/daily", "schedule": "30 0 * * *" },
+    { "path": "/api/cron/monday", "schedule": "30 1 * * 1" },
+    { "path": "/api/cron/friday", "schedule": "30 8 * * 5" },
+    { "path": "/api/cron/monthly", "schedule": "0 1 1 * *" }
   ]
 }
