@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import { ContactPicker } from "@/components/contact-picker";
 import { useShell } from "@/components/shell/shell-context";
-import { approveAssignments, createAssignment, dropAssignments, loadAssignOptions, updateAssignment, type AssignOptions } from "@/app/actions/assignments";
+import { approveAssignments, createAssignment, dropAssignments, loadAssignOptions, redraftPlan, updateAssignment, type AssignOptions } from "@/app/actions/assignments";
 import { loadContactChoices } from "@/app/actions/log";
 import type { ContactLite } from "@/lib/log";
 import { SELECTABLE_ACTION_CODES } from "@/lib/outgrow";
@@ -29,7 +29,7 @@ function PlanItem({ row }: { row: PlanRow }) {
   return (
     <div className={`draft ${draft ? "new" : "ok"}`}>
       <div style={{ minWidth: 0 }}>
-        <div className="who">{row.assignee_name} → {row.contact_name}{row.account_name ? ` · ${row.account_name}` : ""}{row.why ? ` · ${row.why}` : ""}</div>
+        <div className="who">{row.assignee_name} → {row.contact_name}{row.account_name ? ` · ${row.account_name}` : ""}{row.why ? ` · ${row.why}` : ""}{row.operator_draft && draft ? <> · <span className="chip a">Planner draft</span></> : null}</div>
         {edit ? (
           <div style={{ display: "grid", gap: 6, marginTop: 6 }}>
             <label className="lbl" htmlFor={`ins-${row.assignment_id}`}>Instruction
@@ -172,4 +172,29 @@ export function Roster({ rows }: { rows: RosterRow[] }) {
       <div className="demo" style={{ marginTop: 8 }}>Everyone on the roster is listed, including people who haven't logged anything, so participation can't look better than it is.</div>
     </div>
   );
+}
+
+/** Asks the Monday planner for a fresh set of drafts. Only the operator's own unapproved drafts are replaced; the button says so before it runs. */
+export function RedraftButton({ drafts, scopeLabel }: { drafts: number; scopeLabel: string }) {
+  const { toast } = useShell();
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  const [confirm, setConfirm] = useState(false);
+  const go = () => start(async () => {
+    setConfirm(false);
+    const r = await redraftPlan();
+    if (!r.ok) { toast(r.error); return; }
+    toast(r.data.drafted ? `${r.data.drafted} new draft${r.data.drafted === 1 ? "" : "s"} for ${scopeLabel}.${r.data.note ? ` ${r.data.note}` : ""}` : (r.data.note ?? "Nothing new to plan right now."));
+    router.refresh();
+  });
+  if (confirm) {
+    return (
+      <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+        <span style={{ fontSize: 12.5, color: "var(--muted)" }}>Replaces the {drafts} unapproved draft{drafts === 1 ? "" : "s"} for {scopeLabel}. Approved cards and ones you wrote stay.</span>
+        <button className="btn sm p" disabled={pending} onClick={go}>Redraft</button>
+        <button className="btn sm" onClick={() => setConfirm(false)}>Not now</button>
+      </div>
+    );
+  }
+  return <button className="btn sm" disabled={pending} onClick={() => (drafts > 0 ? setConfirm(true) : go())}>{pending ? "Drafting…" : drafts > 0 ? "Redraft" : "Draft this week's plan"}</button>;
 }

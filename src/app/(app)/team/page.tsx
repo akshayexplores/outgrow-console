@@ -6,14 +6,15 @@ import { requireNav } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { loadTeam } from "@/lib/data/team";
 import { InboxList } from "../today/today-client";
-import { PlanBoard, Roster } from "./team-client";
+import { PlanBoard, RedraftButton, Roster } from "./team-client";
 
 export const metadata: Metadata = { title: "Team" };
 
 const TABS = [["monday", "Monday plan"], ["week", "This week"], ["inbox", "From engineers"]] as const;
 
 export default async function TeamPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
-  await requireNav("team");
+  const { me } = await requireNav("team");
+  const wide = me.is_admin || me.app_role === "leader";
   const { tab: raw } = await searchParams;
   const tab = TABS.some(([k]) => k === raw) ? raw! : "monday";
   const supabase = await createClient();
@@ -35,8 +36,9 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
       {tab === "monday" && (
         <>
           <div className="op"><span className="dot"><Sparkles aria-hidden /></span><div>
-            <p>{drafts ? <>There {drafts === 1 ? "is" : "are"} <b>{drafts}</b> draft assignment{drafts === 1 ? "" : "s"} waiting. Approve, edit or drop each one; people only see approved cards.</> : "Every assignment this week is approved. Add more by hand below."}</p>
-            <div className="why">The AI Monday planner that drafts these from your lists arrives in Milestone 2. Until then, add assignments here and they go straight to the person's Today screen.</div>
+            <p>{drafts ? <>There {drafts === 1 ? "is" : "are"} <b>{drafts}</b> draft assignment{drafts === 1 ? "" : "s"} waiting. Approve, edit or drop each one; people only see approved cards.</> : "Nothing is waiting for approval. Add assignments by hand below, or ask the planner for a draft."}</p>
+            <div className="why">The planner drafts these from your who-to-call lists every Monday at 07:00. It can only pick people who have a line to the contact, approved plays, and channels the contact allows.</div>
+            <div style={{ marginTop: 8 }}><RedraftButton drafts={d.plan.filter((p) => p.status === "Draft" && p.operator_draft).length} scopeLabel={wide ? "everyone" : "your team"} /></div>
           </div></div>
           <PlanBoard plan={d.plan} />
           <div className="sech"><h2>Huddle agenda · 15 minutes</h2></div>
