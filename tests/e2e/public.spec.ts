@@ -31,6 +31,19 @@ test.describe("signed out", () => {
     }
   });
 
+  test("scheduled-job endpoints refuse anyone without the secret, as JSON", async ({ request }) => {
+    // 401 when CRON_SECRET is set on the deployment, 503 when it is not. Never 200, never an HTML redirect, never a job run.
+    for (const job of ["daily", "monday", "friday", "monthly", "nonsense"]) {
+      for (const headers of [{}, { Authorization: "Bearer not-the-secret" }, { Authorization: "Bearer " }]) {
+        const res = await request.get(`/api/cron/${job}`, { headers, maxRedirects: 0 });
+        expect([401, 503], `${job} ${JSON.stringify(headers)}`).toContain(res.status());
+        expect(res.headers()["content-type"]).toContain("application/json");
+        expect(res.headers()["cache-control"]).toContain("no-store");
+        expect(JSON.stringify(await res.json())).not.toMatch(/period|detail|drafted/);
+      }
+    }
+  });
+
   test("security headers are set", async ({ request }) => {
     const res = await request.get("/login");
     const h = res.headers();
