@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireActionSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { ACTION_CODE_VALUES } from "@/lib/outgrow";
+import { runPlanner } from "@/lib/operator/plan";
 import { errResult, friendlyDbError, isoDate, okResult, uuid, type ActionResult } from "@/lib/types";
 
 const refresh = () => { for (const p of ["/team", "/today"]) revalidatePath(p); };
@@ -95,4 +96,29 @@ export async function loadAssignOptions(): Promise<ActionResult<AssignOptions>> 
     people: (people.data ?? []).map((p) => ({ person_id: p.person_id as string, full_name: p.full_name as string, job_role: p.job_role as string | null })),
     plays: (plays.data ?? []).map((p) => ({ play_id: p.play_id as string, title: String(p.title).slice(0, 90) })),
   });
+}
+
+/**
+ * "Redraft": ask the Monday planner for a fresh set of drafts. A leader or admin redrafts for the whole roster; a delivery lead for their own team only.
+ * Only the operator's own still-Draft rows are replaced. Approved cards and anything written by hand are never touched.
+ */
+export async function redraftPlan(): Promise<ActionResult<{ drafted: number; source: string; note: string | null }>> {
+  const s = await requireActionSession();
+  const leader = s.me.is_admin || s.me.app_role === "leader";
+  if (!leader && s.me.app_role !== "delivery_lead") return errResult("Only leaders and delivery leads can redraft the plan.");
+  let scope: string[] | undefined;
+  if (!leader) {
+    if (!s.me.person_id) return errResult("Your account isn't on the roster.");
+    const supabase = await createClient();
+    const { data } = await supabase.from("acsia_people").select("person_id").or(`manager_id.eq.${s.me.person_id},person_id.eq.${s.me.person_id}`).eq("active", true).is("archived_at", null).limit(200);
+    scope = (data ?? []).map((p) => String(p.person_id));
+    if (!scope.length) return errResult("You don't have anyone on your team yet.");
+  }
+  try {
+    const r = await runPlanner({ personId: s.me.person_id, scopePersonIds: scope, replace: true, notify: false });
+    refresh();
+    return okResult({ drafted: r.drafted, source: r.source, note: r.note });
+  } catch (e) {
+    return errResult(e instanceof Error && e.message.length < 160 ? e.message : "The plan couldn't be drafted just now. Try again in a minute.");
+  }
 }

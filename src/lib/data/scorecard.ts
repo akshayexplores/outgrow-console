@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { addDays } from "@/lib/dates";
+import type { StoredDraft } from "@/lib/operator/score-core";
 
 export interface ScoreRow { person_id: string; full_name: string; job_role: string | null; actions: number; target: number; pct: number | null; streak: number; ranked: boolean }
 export interface Story { story_id: string; story_text: string | null; person_name: string; account_name: string; value_usd: number | null; status: string }
@@ -15,13 +16,15 @@ export interface ScorecardData {
   rosterNames: string[];
   stories: Story[];
   featuredStoryId: string | null;
+  /** The operator's Friday draft. The view returns it for the leader, CEO and admin only; everyone else gets null. */
+  aiDraft: StoredDraft | null;
 }
 
 export async function loadScorecard(supabase: SupabaseClient, weekStart: string): Promise<ScorecardData> {
   const [sum, stats, week, stories] = await Promise.all([
     supabase.rpc("week_summary", { p_week: weekStart }),
     supabase.rpc("week_stats", { p_week: weekStart }),
-    supabase.from("scorecard_weeks_safe").select("week_id, status, ceo_commentary, published_at, featured_story_ids").eq("week_start", weekStart).maybeSingle(),
+    supabase.from("scorecard_weeks_safe").select("week_id, status, ceo_commentary, published_at, featured_story_ids, ai_draft").eq("week_start", weekStart).maybeSingle(),
     supabase.from("success_stories_safe").select("story_id, person_id, account_id, story_text, value_usd, status, created_at").gte("created_at", `${weekStart}T00:00:00+05:30`).lt("created_at", `${addDays(weekStart, 7)}T00:00:00+05:30`).in("status", ["Nominated", "Featured"]).order("created_at", { ascending: false }).limit(20),
   ]);
   const t = (sum.data ?? null) as Record<string, unknown> | null;
@@ -52,5 +55,17 @@ export async function loadScorecard(supabase: SupabaseClient, weekStart: string)
     rosterNames: rows.map((r) => r.full_name),
     stories: st.map((s) => ({ story_id: s.story_id, story_text: s.story_text, person_name: pName.get(s.person_id) ?? "Colleague", account_name: aName.get(s.account_id) ?? "", value_usd: s.value_usd, status: s.status })),
     featuredStoryId: ((week.data?.featured_story_ids as string[] | null) ?? [])[0] ?? null,
+    aiDraft: parseDraft(week.data?.ai_draft),
+  };
+}
+
+function parseDraft(v: unknown): StoredDraft | null {
+  if (!v || typeof v !== "object") return null;
+  const d = v as Record<string, unknown>;
+  if (typeof d.commentary !== "string" || !d.commentary.trim()) return null;
+  return {
+    commentary: d.commentary, story: typeof d.story === "string" ? d.story : "", names: Array.isArray(d.names) ? d.names.map(String) : [],
+    source: d.source === "ai" ? "ai" : "rules", run_id: typeof d.run_id === "string" ? d.run_id : null,
+    generated_at: typeof d.generated_at === "string" ? d.generated_at : "", note: typeof d.note === "string" ? d.note : null,
   };
 }

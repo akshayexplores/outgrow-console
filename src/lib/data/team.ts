@@ -6,7 +6,7 @@ import { nameMaps, type InboxRow } from "@/lib/data/today";
 
 export interface PlanRow {
   assignment_id: string; status: string; assignee_id: string; assignee_name: string; contact_id: string | null; contact_name: string; account_name: string;
-  why: string; instruction: string; why_now: string | null; expected_action_code: string | null; suggested_play_id: string | null; due_date: string | null;
+  why: string; instruction: string; why_now: string | null; operator_draft: boolean; expected_action_code: string | null; suggested_play_id: string | null; due_date: string | null;
 }
 export interface RosterRow { person_id: string; full_name: string; job_role: string | null; actions: number; target: number; threshold: number; participated: boolean; streak: number }
 export interface TeamData { weekStart: string; plan: PlanRow[]; roster: RosterRow[]; inbox: InboxRow[]; assignmentsDone: number; assignmentsTotal: number }
@@ -15,12 +15,12 @@ export async function loadTeam(supabase: SupabaseClient): Promise<TeamData> {
   const weekStart = weekStartOf(todayIST());
   const [statRes, asgRes, inboxRes] = await Promise.all([
     supabase.rpc("week_stats", { p_week: weekStart }),
-    supabase.from("assignments").select("assignment_id, status, assignee_id, contact_id, account_id, list_id, instruction, why_now, coverage_note, expected_action_code, suggested_play_id, due_date")
+    supabase.from("assignments").select("assignment_id, status, assignee_id, contact_id, account_id, list_id, instruction, why_now, coverage_note, expected_action_code, suggested_play_id, due_date, operator_draft")
       .eq("week_start", weekStart).neq("status", "Dropped").order("created_at", { ascending: true }).limit(300),
     supabase.from("capture_inbox").select("id, from_person_id, text, status, created_at").eq("status", "new").order("created_at", { ascending: false }).limit(50),
   ]);
   const stats = (statRes.data ?? []) as { person_id: string; full_name: string; job_role: string | null; actions: number; weekly_target: number; participated: boolean; streak_weeks: number }[];
-  const asg = (asgRes.data ?? []) as { assignment_id: string; status: string; assignee_id: string; contact_id: string | null; account_id: string | null; list_id: string | null; instruction: string; why_now: string | null; coverage_note: string | null; expected_action_code: string | null; suggested_play_id: string | null; due_date: string | null }[];
+  const asg = (asgRes.data ?? []) as { assignment_id: string; status: string; assignee_id: string; contact_id: string | null; account_id: string | null; list_id: string | null; instruction: string; why_now: string | null; coverage_note: string | null; expected_action_code: string | null; suggested_play_id: string | null; due_date: string | null; operator_draft: boolean }[];
   const inbox = (inboxRes.data ?? []) as { id: string; from_person_id: string; text: string; status: string; created_at: string }[];
 
   const listIds = [...new Set(asg.map((a) => a.list_id).filter((x): x is string => !!x))];
@@ -38,7 +38,7 @@ export async function loadTeam(supabase: SupabaseClient): Promise<TeamData> {
     return {
       assignment_id: a.assignment_id, status: a.status, assignee_id: a.assignee_id, assignee_name: pName.get(a.assignee_id) ?? "Colleague", contact_id: a.contact_id,
       contact_name: c?.name ?? "Contact", account_name: names.accounts.get(a.account_id ?? c?.account_id ?? "") ?? "", why: a.why_now ?? (a.list_id ? listName.get(a.list_id) : undefined) ?? a.coverage_note ?? "",
-      instruction: a.instruction, why_now: a.why_now, expected_action_code: a.expected_action_code, suggested_play_id: a.suggested_play_id, due_date: a.due_date,
+      instruction: a.instruction, why_now: a.why_now, operator_draft: a.operator_draft === true, expected_action_code: a.expected_action_code, suggested_play_id: a.suggested_play_id, due_date: a.due_date,
     };
   });
   const roster: RosterRow[] = stats.map((s) => ({
