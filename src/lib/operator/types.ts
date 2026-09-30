@@ -8,8 +8,11 @@ export const JOB_TIER: Record<JobKey, Tier> = {
 };
 export const TIMEOUT_MS: Record<Tier, number> = { quick: 15_000, balanced: 45_000, deep: 120_000 };
 
-/** Jobs a person triggers by clicking something: these are rate-limited per user. Cron jobs (plan, score, analyst) are not. */
-export const INTERACTIVE_JOBS: readonly JobKey[] = ["capture", "follow", "brief", "coach", "guard", "transcribe"];
+/**
+ * Jobs a person can trigger by clicking something: rate-limited per user. plan ("Redraft") and score ("Draft it for me") are here too;
+ * the same jobs run from cron with no person attached, and those runs are never rate-limited. The analyst only ever runs from cron or "Run now".
+ */
+export const INTERACTIVE_JOBS: readonly JobKey[] = ["capture", "follow", "brief", "coach", "guard", "transcribe", "plan", "score"];
 
 export const JOB_LABEL: Record<JobKey, string> = {
   capture: "Capture parser", transcribe: "Voice notes", follow: "Follow-through", brief: "Call brief", plan: "Monday planner",
