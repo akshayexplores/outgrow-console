@@ -8,6 +8,7 @@ import {
   actionCount, addsOg01, channelWarnings, type ChannelRuleLite, type ChannelWarning,
 } from "@/lib/outgrow";
 import { doNotOfferHits } from "@/lib/operator/guardrails";
+import type { GuardKind } from "@/lib/operator/prompts";
 
 export interface LogAsk { key: string; code: string; service_line_id: string; value_usd: string; said: string }
 
@@ -49,7 +50,8 @@ export interface ContactLite {
   preferred_channel?: string | null;
 }
 
-export interface CheckIssue { level: "error" | "warn"; message: string; field?: string }
+/** `guard` marks a warning that came from a code rule; the Check screen offers "Why?" and the guardrail job puts the rule into friendlier words. */
+export interface CheckIssue { level: "error" | "warn"; message: string; field?: string; guard?: { kind: GuardKind; term: string } }
 
 export function draftActionCount(d: Pick<LogDraft, "touchType" | "asks">): number {
   return actionCount(d.touchType, d.asks.length);
@@ -73,10 +75,10 @@ export function checkDraft(d: LogDraft, contact: ContactLite | null, rules: Chan
     else if (a.code === "OG1.1" && serviceLineShort(a.service_line_id) === "NONE") out.push({ level: "error", message: `Ask ${n}: a Did You Know must name something the customer can pay for.`, field: `ask-${a.key}` });
     const v = a.value_usd.trim();
     if (v === "" || !Number.isFinite(Number(v)) || Number(v) < 0) out.push({ level: "error", message: `Ask ${n}: give a value. A rough guess is fine, and 0 is valid.`, field: `ask-${a.key}` });
-    for (const hit of doNotOfferHits(a.said, doNotOfferNames)) out.push({ level: "warn", message: `Ask ${n}: ${hit} isn't something Acsia offers. Don't pitch it; ask who does it for them today.`, field: `ask-${a.key}` });
+    for (const hit of doNotOfferHits(a.said, doNotOfferNames)) out.push({ level: "warn", message: `Ask ${n}: ${hit} isn't something Acsia offers. Don't pitch it; ask who does it for them today.`, field: `ask-${a.key}`, guard: { kind: "do_not_offer", term: hit } });
   });
   const dyks = d.asks.filter((a) => a.code === "OG1.1").length;
-  if (dyks > 1) out.push({ level: "warn", message: `${dyks} Did You Knows in one conversation. The Outgrow rule is one DYK per conversation; keep only the one you actually raised.` });
+  if (dyks > 1) out.push({ level: "warn", message: `${dyks} Did You Knows in one conversation. The Outgrow rule is one DYK per conversation; keep only the one you actually raised.`, guard: { kind: "one_dyk", term: "" } });
   if (d.touchDate) {
     // date sanity mirrors the RPC (not in the future; not older than 30 days). "today" is passed in by the caller through touchDate max/min, so only shape is checked here.
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d.touchDate)) out.push({ level: "error", message: "Use a valid conversation date.", field: "touchDate" });
@@ -86,7 +88,8 @@ export function checkDraft(d: LogDraft, contact: ContactLite | null, rules: Chan
       channel: d.channel, touchType: d.touchType, contactName: contact.name, contactCountry: contact.country, accountCountry: contact.account_country,
       optOutChannels: contact.opt_out_channels, contactStatus: contact.contact_status, rules, asks: d.asks.length,
     });
-    for (const w of warns) if (w.code !== "NOT_PROACTIVE") out.push({ level: "warn", message: w.message });
+    const kindOf: Record<string, GuardKind | undefined> = { OPT_OUT: "opt_out", COUNTRY_AVOID: "country_avoid", DO_NOT_CONTACT: "do_not_contact" };
+    for (const w of warns) if (w.code !== "NOT_PROACTIVE") out.push({ level: "warn", message: w.message, ...(kindOf[w.code] ? { guard: { kind: kindOf[w.code]!, term: d.channel } } : {}) });
   }
   return out;
 }

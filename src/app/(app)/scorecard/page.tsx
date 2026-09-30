@@ -73,7 +73,7 @@ export default async function ScorecardPage({ searchParams }: { searchParams: Pr
       ) : week < thisWeek ? (
         <div className="empty">This week wasn't published.</div>
       ) : (
-        <CommentaryBox week={week} initial={d.commentary} rosterNames={d.rosterNames} canPublish={canPublish} stories={d.stories} defaultStory={d.featuredStoryId} rosterSize={t?.roster_size ?? 0} />
+        <CommentaryBox week={week} initial={d.commentary} rosterNames={d.rosterNames} canPublish={canPublish} stories={d.stories} defaultStory={d.featuredStoryId} rosterSize={t?.roster_size ?? 0} draft={d.aiDraft} />
       )}
     </Page>
   );

@@ -5,8 +5,9 @@ import { X } from "lucide-react";
 import { Sheet } from "@/components/ui/sheet";
 import { useShell, type LogOpts } from "@/components/shell/shell-context";
 import { loadContactChoices, loadPerson, parseCapture, saveLog, type SaveResult } from "@/app/actions/log";
+import { explainGuard } from "@/app/actions/guard";
 import { ContactPicker } from "@/components/contact-picker";
-import { buildLogPayload, checkDraft, draftActionCount, emptyDraft, hasErrors, newAskKey, type ContactLite, type LogDraft } from "@/lib/log";
+import { buildLogPayload, checkDraft, draftActionCount, emptyDraft, hasErrors, newAskKey, type CheckIssue, type ContactLite, type LogDraft } from "@/lib/log";
 import { CHANNELS, SELECTABLE_ACTION_CODES, TOUCH_TYPES, isProactive } from "@/lib/outgrow";
 import { todayIST, addDays } from "@/lib/dates";
 import { plural } from "@/lib/format";
@@ -194,7 +195,7 @@ export function LogSheet({ opts, onClose }: { opts: LogOpts; onClose: () => void
       </div>
 
       <div aria-live="polite" style={{ display: "grid", gap: 6 }}>
-        {issues.filter((i) => i.level === "warn").map((i, k) => <div className="warnbox" key={`w${k}`}>{i.message}</div>)}
+        {issues.filter((i) => i.level === "warn").map((i, k) => <div className="warnbox" key={`w${k}`}>{i.message}{i.guard && <GuardWhy guard={i.guard} />}</div>)}
         {issues.filter((i) => i.level === "error").map((i, k) => <div className="errbox" key={`e${k}`}>{i.message}</div>)}
       </div>
 
@@ -245,5 +246,19 @@ export function LogSheet({ opts, onClose }: { opts: LogOpts; onClose: () => void
       </label>
       {error && <div className="errbox" role="alert">{error}</div>}
     </Sheet>
+  );
+}
+
+
+/** "Why?" on a warning that a code rule raised. The rule is code; this only asks the guardrail job to explain it in plain words (or shows a fixed explanation if the operator is off). */
+function GuardWhy({ guard }: { guard: NonNullable<CheckIssue["guard"]> }) {
+  const [text, setText] = useState<string | null>(null);
+  const [pending, start] = useTransition();
+  if (text) return <div style={{ marginTop: 4, fontSize: 12.5 }}>{text}</div>;
+  return (
+    <button type="button" className="btn sm" style={{ marginLeft: 8 }} disabled={pending} onClick={() => start(async () => {
+      const r = await explainGuard(guard);
+      setText(r.ok ? r.data.text : "This is one of the console's built-in rules. Ask your Outgrow leader if you're unsure.");
+    })}>{pending ? "…" : "Why?"}</button>
   );
 }
