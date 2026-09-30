@@ -93,3 +93,87 @@ Job: coaching chat inside the console. Answer the employee's question about scri
 ${UNTRUSTED}
 Context: ${JSON.stringify(c)}`;
 }
+
+/* ------------------------------------------------------------------ M2 jobs: planner, scorecard writer, guardrail explainer, analyst */
+
+export interface PlanPromptInput {
+  weekStart: string;
+  dueDate: string;
+  people: { person_id: string; first_name: string; role: string; min: number; max: number; already: number; last_week_done: number; last_week_skipped: number }[];
+  candidates: { contact_id: string; contact: string; title: string | null; account: string; list_id: string; list: string; reason: string; days_on_list: number; can_call: string[]; avoid_channels: string[] }[];
+  plays: { play_id: string; title: string; action_code: string; priority: string; lists: string[]; idea: string }[];
+  focus: { dyk_focus_play_ids: string[]; referral_focus: string | null; questions: string[] } | null;
+}
+
+export function planPrompt(i: PlanPromptInput): Msg[] {
+  const system = `${PREAMBLE}
+
+Job: Monday planner. Draft next week's proactive assignments for the roster. A manager approves every one before anybody sees it.
+${UNTRUSTED}
+Reply with ONLY a JSON object: {"assignments": [{"assignee_id": a person_id from people, "contact_id": a contact_id from candidates, "list_id": that candidate's list_id, "play_id": a play_id from plays or null, "why_now": at most 5 words, "instruction": ONE plain sentence telling the person what to ask or say}]}
+Rules:
+- Only use ids that appear in the input. Each assignee_id must be in that candidate's can_call list. A contact appears at most once in your answer.
+- Give each person between min and max assignments in total, counting "already" (assignments they already have this week). Give fewer if there are not enough good candidates; never pad.
+- Prefer the fastest-revenue lists first (proposals waiting, stalled before proposal, renewals), then wider coverage. Spread work fairly: people who skipped a lot last week get fewer, not more.
+- The instruction is a call or a visit, never an email. Do not name any channel in avoid_channels. Do not mention money, conversion rates or forecasts.
+- Use the play only if it fits the candidate's list. Use this week's focus (focus.dyk_focus_play_ids, focus.referral_focus, focus.questions) when it fits; ignore it when it does not.
+- Write instructions the way a helpful colleague would: "Ask Dana where the proposal stands and what would help it move."`;
+  return [{ role: "system", content: system }, { role: "user", content: JSON.stringify(i) }];
+}
+
+export interface ScorePromptInput {
+  weekStart: string;
+  totals: { total_actions: number; participants: number; roster_size: number; proposals_raised: number; followups_made: number; opportunities_created: number };
+  people: { first_name: string; actions: number; weekly_target: number; streak_weeks: number; top_asks: string[] }[];
+  story: { by: string | null; text: string } | null;
+}
+
+export function scorePrompt(i: ScorePromptInput): Msg[] {
+  const system = `${PREAMBLE}
+
+Job: Friday scorecard writer. Draft the leader's short commentary for the weekly scorecard that goes to EVERYONE on the roster, including engineers.
+${UNTRUSTED}
+Reply with ONLY a JSON object: {"story": string, "commentary": string}
+- commentary: exactly TWO sentences. Name exactly two people from "people", by first name, for something specific they did (use top_asks and actions). Praise swings and asks, not hits. Warm, plain, specific.
+- story: at most 40 words about the story in "story" (what the person did and what changed), or "" when there is no story.
+Never mention money or amounts, revenue, pipeline, competitors, conversion rates or forecasts. Use only facts in the input; do not invent numbers, names or accounts.`;
+  return [{ role: "system", content: system }, { role: "user", content: JSON.stringify(i) }];
+}
+
+/** The rule itself is code (docs/04 job 8). The model only writes the friendly explanation of a rule that already fired. */
+export const GUARD_KINDS = ["do_not_offer", "one_dyk", "opt_out", "country_avoid", "do_not_contact"] as const;
+export type GuardKind = (typeof GUARD_KINDS)[number];
+
+export function guardPrompt(kind: GuardKind, term: string): Msg[] {
+  const rule: Record<GuardKind, string> = {
+    do_not_offer: "Acsia does not offer this capability (for example ASIL C/D, video processing, audio, hypervisor development, AUTOSAR security implementation, perception algorithms). The employee should not pitch it; they can ask who does it for the customer today.",
+    one_dyk: "Outgrow allows one Did You Know per conversation, so a second one dilutes the first.",
+    opt_out: "The contact opted out of this channel, so the console warns before it is logged as the way they were reached.",
+    country_avoid: "This channel is on the country's avoid list for customer contact.",
+    do_not_contact: "This contact is marked Do not contact, so they cannot be assigned or logged as a proactive touch.",
+  };
+  const system = `${PREAMBLE}
+
+Job: guardrail explainer. A rule in the console already fired. Write ONE friendly sentence (at most 30 words) explaining why, in plain words to an engineer or account manager, and what to do instead. Do not blame the person. Do not mention money, conversion rates or forecasts.
+${UNTRUSTED}
+Reply with ONLY a JSON object: {"explanation": string}
+The rule that fired: ${rule[kind]}`;
+  return [{ role: "system", content: system }, { role: "user", content: JSON.stringify({ rule: kind, subject: term.slice(0, 60) }) }];
+}
+
+export interface AnalystPromptInput {
+  programme_week: number;
+  by_code: { code: string; label: string; actions: number; opportunities: number; rate_percent: number | null; enough_data: boolean }[];
+  participation_by_week: { week_start: string; participation_percent: number | null; total_actions: number }[];
+  new_service_lines_bought_last_90_days: number;
+}
+
+export function analystPrompt(i: AnalystPromptInput): Msg[] {
+  const system = `${PREAMBLE}
+
+Job: quarterly analyst for the Outgrow leader. Review the last 13 weeks of the programme from the numbers below and write a short review in markdown (at most 220 words): what is working, what is not, and two things to do next quarter.
+${UNTRUSTED}
+Reply with ONLY a JSON object: {"review": string (markdown), "watch": string[] (at most 3 short cautions)}
+Rules: quote ONLY numbers that appear in the input, exactly as given. Where enough_data is false say "not enough data yet" instead of a rate. One quarter of numbers is a start, not proof: say so once. Do not name people, customers or amounts of money. Do not forecast revenue.`;
+  return [{ role: "system", content: system }, { role: "user", content: JSON.stringify(i) }];
+}
